@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luis Barranco · Systems Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --bg2: #0d1117;
+    --bg3: #111820;
+    --green: #00ff88;
+    --green-dim: #00ff8840;
+    --green-faint: #00ff8815;
+    --cyan: #00d4ff;
+    --cyan-dim: #00d4ff30;
+    --amber: #ffb347;
+    --red: #ff4d6d;
+    --text: #c9d1d9;
+    --text-dim: #8b949e;
+    --text-faint: #444c56;
+    --border: #21262d;
+    --border-glow: #00ff8840;
+    --mono: 'JetBrains Mono', monospace;
+    --serif: 'Playfair Display', serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── SCAN LINE ── */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -100%;
+    left: 0; right: 0;
+    height: 200%;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,255,136,0.015) 2px,
+      rgba(0,255,136,0.015) 4px
+    );
+    pointer-events: none;
+    z-index: 9998;
+    animation: scan 8s linear infinite;
+  }
+
+  @keyframes scan { to { top: 0; } }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--green); border-radius: 2px; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 3rem;
+    background: rgba(8,12,16,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--green);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .nav-logo span { color: var(--text-dim); }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 0; height: 1px;
+    background: var(--green);
+    transition: width 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--green); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 0 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero-left { padding-top: 6rem; }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 24px; height: 1px;
+    background: var(--green);
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 0.25rem;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--green);
+  }
+
+  .hero-sub {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    margin: 1.5rem 0 2.5rem;
+    max-width: 380px;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.25s;
+    background: none;
+  }
+
+  .btn-primary {
+    border-color: var(--green);
+    color: var(--green);
+    box-shadow: inset 0 0 0 0 var(--green);
+  }
+
+  .btn-primary:hover {
+    color: var(--bg);
+    box-shadow: inset 0 0 0 40px var(--green);
+  }
+
+  .btn-secondary {
+    border-color: var(--border);
+    color: var(--text-dim);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--text-dim);
+    color: var(--text);
+  }
+
+  /* ── TERMINAL ── */
+  .terminal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(0,255,136,0.08), 0 20px 60px rgba(0,0,0,0.5);
+    position: relative;
+  }
+
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+
+  .terminal-title {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+  }
+
+  .terminal-body {
+    padding: 1.5rem;
+    min-height: 320px;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  .t-line { display: flex; gap: 0.5rem; opacity: 0; animation: fadein 0.3s forwards; }
+  .t-prompt { color: var(--green); flex-shrink: 0; }
+  .t-cmd { color: var(--text); }
+  .t-out { color: var(--text-dim); padding-left: 1rem; }
+  .t-ok { color: var(--green); }
+  .t-warn { color: var(--amber); }
+  .t-err { color: var(--red); }
+
+  .cursor {
+    display: inline-block;
+    width: 8px; height: 14px;
+    background: var(--green);
+    animation: blink 1s step-end infinite;
+    vertical-align: text-bottom;
+    margin-left: 2px;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+  @keyframes fadein { to { opacity: 1; } }
+
+  /* ── SECTION BASE ── */
+  section { padding: 6rem 3rem; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .section-num {
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 0.2em;
+  }
+
+  .section-title {
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* ── SKILLS ── */
+  #skills { background: var(--bg2); }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .skill-card {
+    background: var(--bg2);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+    cursor: default;
+  }
+
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: var(--green);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s;
+  }
+
+  .skill-card:hover { background: var(--bg3); }
+  .skill-card:hover::before { transform: scaleX(1); }
+
+  .skill-icon {
+    font-size: 1.75rem;
+    margin-bottom: 1.25rem;
+    display: block;
+  }
+
+  .skill-name {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 0.5rem;
+  }
+
+  .skill-title {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+
+  .skill-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    font-size: 10px;
+    padding: 0.2rem 0.65rem;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 2px;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+  }
+
+  .skill-card:hover .tag {
+    border-color: var(--green-dim);
+    color: var(--green);
+  }
+
+  /* ── EXPERIENCE / TIMELINE ── */
+  #experience { background: var(--bg); }
+
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--green), transparent);
+  }
+
+  .timeline-item {
+    position: relative;
+    padding: 0 0 3rem 3rem;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.5s;
+  }
+
+  .timeline-item.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .timeline-dot {
+    position: absolute;
+    left: -5px; top: 4px;
+    width: 10px; height: 10px;
+    border: 1px solid var(--green);
+    background: var(--bg);
+    transform: rotate(45deg);
+    transition: background 0.3s;
+  }
+
+  .timeline-item:hover .timeline-dot { background: var(--green); }
+
+  .timeline-date {
+    font-size: 10px;
+    color: var(--green);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .timeline-role {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 0.25rem;
+  }
+
+  .timeline-company {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+  }
+
+  .timeline-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    max-width: 640px;
+    border-left: 2px solid var(--green-dim);
+    padding-left: 1rem;
+    line-height: 1.9;
+  }
+
+  /* ── TECH STACK ── */
+  #stack { background: var(--bg2); }
+
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+
+  .stack-item {
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    text-align: center;
+    transition: all 0.25s;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stack-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--green-faint);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .stack-item:hover {
+    border-color: var(--green);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,255,136,0.1);
+  }
+
+  .stack-item:hover::after { opacity: 1; }
+
+  .stack-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .stack-name { font-size: 11px; letter-spacing: 0.15em; color: var(--text-dim); }
+
+  /* ── PROJECTS ── */
+  #projects { background: var(--bg); }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .project-card::before {
+    content: attr(data-num);
+    position: absolute;
+    right: -0.5rem; top: -1rem;
+    font-family: var(--serif);
+    font-size: 5rem;
+    color: var(--green-faint);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .project-card:hover {
+    border-color: var(--green);
+    box-shadow: 0 0 40px rgba(0,255,136,0.08);
+    transform: translateY(-4px);
+  }
+
+  .project-type {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 1rem;
+  }
+
+  .project-title {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 0.75rem;
+  }
+
+  .project-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+
+  .project-link {
+    font-size: 11px;
+    color: var(--green);
+    text-decoration: none;
+    letter-spacing: 0.15em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: gap 0.2s;
+  }
+
+  .project-link:hover { gap: 0.8rem; }
+
+  /* ── CONTACT ── */
+  #contact {
+    background: var(--bg2);
+    text-align: center;
+    border-top: 1px solid var(--border);
+  }
+
+  .contact-inner { max-width: 600px; margin: 0 auto; }
+
+  .contact-pre {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--green);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .contact-title {
+    font-family: var(--serif);
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    color: #fff;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .contact-title em { font-style: italic; color: var(--green); }
+
+  .contact-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 3rem;
+    line-height: 1.9;
+  }
+
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 4rem;
+  }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    margin: 0 auto 3rem;
+    max-width: 500px;
+    font-size: 11px;
+  }
+
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(0,255,136,0); }
+  }
+
+  .status-text { color: var(--green); }
+  .status-sep { color: var(--border); }
+  .status-loc { color: var(--text-dim); }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 2rem 3rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+
+  footer span { color: var(--green); }
+
+  /* ── GLITCH ── */
+  .glitch {
+    position: relative;
+    display: inline-block;
+  }
+
+  .glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+  }
+
+  .glitch::before {
+    color: var(--cyan);
+    clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+    transform: translateX(-2px);
+    animation: glitch1 4s infinite;
+  }
+
+  .glitch::after {
+    color: var(--red);
+    clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+    transform: translateX(2px);
+    animation: glitch2 4s infinite;
+  }
+
+  @keyframes glitch1 {
+    0%, 90%, 100% { transform: translateX(0); }
+    92% { transform: translateX(-3px) skewX(-5deg); }
+    94% { transform: translateX(3px) skewX(3deg); }
+    96% { transform: translateX(-1px); }
+  }
+
+  @keyframes glitch2 {
+    0%, 90%, 100% { transform: translateX(0); }
+    92% { transform: translateX(3px) skewX(5deg); }
+    94% { transform: translateX(-3px) skewX(-3deg); }
+    96% { transform: translateX(1px); }
+  }
+
+  /* ── METRICS ── */
+  .metrics {
+    display: flex;
+    gap: 3rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .metric-val {
+    font-family: var(--serif);
+    font-size: 2rem;
+    color: var(--green);
+    display: block;
+  }
+
+  .metric-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1.25rem; }
+    section { padding: 4rem 1.5rem; }
+    #hero { padding: 0 1.5rem; }
+    .hero-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .hero-left { padding-top: 8rem; }
+    .terminal { display: none; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    .metrics { gap: 1.5rem; }
+  }
+
+  /* ── REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s, transform 0.6s;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── PROGRESS BARS ── */
+  .prog-list { display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; }
+
+  .prog-item { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .prog-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .prog-bar {
+    height: 2px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .prog-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: linear-gradient(90deg, var(--green), var(--cyan));
+    width: 0;
+    transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Luis Barranco<span> // sys.eng</span></div>
+  <ul class="nav-links">
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Exp</a></li>
+    <li><a href="#stack">Stack</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid">
+    <div class="hero-left">
+      <div class="hero-tag">Available for work</div>
+      <h1>
+        <span class="glitch" data-text="Systems">Systems</span><br>
+        <em>Engineer &</em><br>
+        Web Craftsman
+      </h1>
+      <p class="hero-sub">
+        Hardware diagnostics · Linux internals · Ethical hacking ·
+        Python automation · Professional web development.
+        I build systems that don't fail — and interfaces that don't forgive mediocrity.
+      </p>
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-primary">$ init --contact</a>
+        <a href="#projects" class="btn btn-secondary">view projects →</a>
+      </div>
+      <div class="metrics">
+        <div>
+          <span class="metric-val" data-count="5">0</span>
+          <span class="metric-label">Years exp.</span>
+        </div>
+        <div>
+          <span class="metric-val" data-count="20">0</span>
+          <span class="metric-label">Devices serviced</span>
+        </div>
+        <div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TERMINAL -->
+    <div class="terminal" id="terminal">
+      <div class="terminal-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <div class="terminal-title">Luis Barranco@kali ~ zsh</div>
+      </div>
+      <div class="terminal-body" id="terminal-body">
+        <!-- injected by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-num">01 /</span>
+      <h2 class="section-title">Core Expertise</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="skills-grid">
+      <div class="skill-card reveal">
+        <span class="skill-icon">🔧</span>
+        <div class="skill-name">Hardware</div>
+        <div class="skill-title">Mantenimiento Preventivo, Predictivo & Correctivo</div>
+        <p class="skill-desc">Diagnóstico y reparación de componentes físicos: laptops, desktops, servidores. Análisis predictivo de fallas, gestión de ciclo de vida de hardware y documentación técnica de intervenciones.</p>
+        <div class="skill-tags">
+          <span class="tag">BIOS/UEFI</span>
+          <span class="tag">POST Diagnosis</span>
+          <span class="tag">RAID</span>
+          <span class="tag">Soldadura SMD</span>
+          <span class="tag">Servidores</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <span class="skill-icon">🐧</span>
+        <div class="skill-name">Linux</div>
+        <div class="skill-title">Administración Avanzada de Sistemas</div>
+        <p class="skill-desc">Configuración, hardening y administración de distros Debian/Arch/RHEL. Scripting en bash, gestión de servicios systemd, redes, virtualización con KVM/Docker y automatización de infraestructura.</p>
+        <div class="skill-tags">
+          <span class="tag">Bash/Zsh</span>
+          <span class="tag">Arch Linux</span>
+          <span class="tag">Kali Linux</span>
+          <span class="tag">Docker</span>
+          <span class="tag">Systemd</span>
+          <span class="tag">Networking</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <span class="skill-icon">🔐</span>
+        <div class="skill-name">Ethical Hacking</div>
+        <div class="skill-title">Seguridad Ofensiva & Análisis de Vulnerabilidades</div>
+        <p class="skill-desc">Reconocimiento, escaneo, explotación y post-explotación en entornos de laboratorio. Conocimiento de metodologías OWASP, PTES y herramientas del red team. Enfocado en hardening defensivo.</p>
+        <div class="skill-tags">
+          <span class="tag">Nmap</span>
+          <span class="tag">Metasploit</span>
+          <span class="tag">Burp Suite</span>
+          <span class="tag">Wireshark</span>
+          <span class="tag">OWASP</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <span class="skill-icon">🐍</span>
+        <div class="skill-name">Python</div>
+        <div class="skill-title">Automatización, Scripts & Desarrollo</div>
+        <p class="skill-desc">Scripting para automatización de tareas, análisis de datos, bots, herramientas de red, y proyectos de seguridad. Código limpio, orientado a objetos y documentado para entornos de producción.</p>
+        <div class="skill-tags">
+          <span class="tag">Automation</span>
+          <span class="tag">Requests</span>
+          <span class="tag">Scapy</span>
+          <span class="tag">Pandas</span>
+          <span class="tag">FastAPI</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <span class="skill-icon">🌐</span>
+        <div class="skill-name">Web Dev</div>
+        <div class="skill-title">CSS & JS de Alto Nivel</div>
+        <p class="skill-desc">Desarrollo de interfaces web profesionales con CSS avanzado (Grid, animaciones, variables), JavaScript moderno y atención obsesiva al detalle visual. Cada línea escrita para impresionar.</p>
+        <div class="skill-tags">
+          <span class="tag">CSS Grid/Flex</span>
+          <span class="tag">Vanilla JS</span>
+          <span class="tag">Animations</span>
+          <span class="tag">React</span>
+          <span class="tag">Responsive</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <span class="skill-icon">⚙️</span>
+        <div class="skill-name">Software</div>
+        <div class="skill-title">Mantenimiento & Soporte Técnico</div>
+        <p class="skill-desc">Diagnóstico de sistemas operativos, recuperación de datos, gestión de drivers, antivirus avanzado y resolución de conflictos de software en entornos Windows y Linux.</p>
+        <div class="skill-tags">
+          <span class="tag">Windows Admin</span>
+          <span class="tag">Data Recovery</span>
+          <span class="tag">Troubleshooting</span>
+          <span class="tag">Drivers</span>
+          <span class="tag">Active Directory</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress bars -->
+    <div style="margin-top: 4rem; max-width: 600px;" class="reveal">
+      <div style="font-size:11px; letter-spacing:.2em; color:var(--green); text-transform:uppercase; margin-bottom:1.5rem;">Nivel de dominio</div>
+      <div class="prog-list" id="progList">
+        <div class="prog-item">
+          <div class="prog-label"><span>Linux & Sysadmin</span><span>90%</span></div>
+          <div class="prog-bar"><div class="prog-fill" data-width="90"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-label"><span>Hardware Maintenance</span><span>88%</span></div>
+          <div class="prog-bar"><div class="prog-fill" data-width="88"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-label"><span>Python</span><span>80%</span></div>
+          <div class="prog-bar"><div class="prog-fill" data-width="80"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-label"><span>Ethical Hacking</span><span>75%</span></div>
+          <div class="prog-bar"><div class="prog-fill" data-width="75"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-label"><span>CSS / JS Web Dev</span><span>85%</span></div>
+          <div class="prog-bar"><div class="prog-fill" data-width="85"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-num">02 /</span>
+      <h2 class="section-title">Experience</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">2023 — Presente</div>
+        <div class="timeline-role">Técnico en Hardware & Soporte IT</div>
+        <div class="timeline-company">Freelance / Independiente</div>
+        <div class="timeline-desc">
+          Mantenimiento preventivo y correctivo de equipos de escritorio y portátiles.
+          Instalación y configuración de redes LAN/WLAN. Diagnóstico de fallas de hardware
+          con herramientas especializadas. Soporte remoto y presencial a usuarios y empresas.
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">2022 — 2023</div>
+        <div class="timeline-role">Desarrollador Web & Automatizador Python</div>
+        <div class="timeline-company">Proyectos Personales & Clientes Locales</div>
+        <div class="timeline-desc">
+          Diseño y desarrollo de páginas web profesionales para pequeños negocios.
+          Automatización de tareas repetitivas con Python (scraping, bots, reportes).
+          Administración de servidores Linux VPS para hosting de proyectos web.
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">2021 — 2022</div>
+        <div class="timeline-role">Investigación en Ciberseguridad</div>
+        <div class="timeline-company">Autodidacta / Plataformas CTF</div>
+        <div class="timeline-desc">
+          Estudio intensivo de seguridad ofensiva y defensiva. Participación en retos CTF
+          (Capture The Flag). Laboratorios con máquinas virtuales Kali Linux y entornos
+          de pentesting controlados. Certificación en curso CEH / OSCP track.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="stack">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-num">03 /</span>
+      <h2 class="section-title">Tech Stack</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="stack-grid reveal">
+      <div class="stack-item"><div class="stack-icon">🐧</div><div class="stack-name">Linux</div></div>
+      <div class="stack-item"><div class="stack-icon">🐍</div><div class="stack-name">Python</div></div>
+      <div class="stack-item"><div class="stack-icon">🌐</div><div class="stack-name">HTML/CSS</div></div>
+      <div class="stack-item"><div class="stack-icon">⚡</div><div class="stack-name">JavaScript</div></div>
+      <div class="stack-item"><div class="stack-icon">⚛️</div><div class="stack-name">React</div></div>
+      <div class="stack-item"><div class="stack-icon">🐋</div><div class="stack-name">Docker</div></div>
+      <div class="stack-item"><div class="stack-icon">📡</div><div class="stack-name">Nmap</div></div>
+      <div class="stack-item"><div class="stack-icon">🔍</div><div class="stack-name">Burp Suite</div></div>
+      <div class="stack-item"><div class="stack-icon">💻</div><div class="stack-name">Kali Linux</div></div>
+      <div class="stack-item"><div class="stack-icon">🗃️</div><div class="stack-name">Git</div></div>
+      <div class="stack-item"><div class="stack-icon">🔌</div><div class="stack-name">Bash/Zsh</div></div>
+      <div class="stack-item"><div class="stack-icon">🛡️</div><div class="stack-name">Wireshark</div></div>
+      <div class="stack-item"><div class="stack-icon">🗄️</div><div class="stack-name">SQL</div></div>
+      <div class="stack-item"><div class="stack-icon">🚀</div><div class="stack-name">FastAPI</div></div>
+      <div class="stack-item"><div class="stack-icon">🔧</div><div class="stack-name">Metasploit</div></div>
+      <div class="stack-item"><div class="stack-icon">📊</div><div class="stack-name">Pandas</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-num">04 /</span>
+      <h2 class="section-title">Projects</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="projects-grid">
+      <div class="project-card reveal" data-num="01">
+        <div class="project-type">Python · Automation</div>
+        <div class="project-title">NetScan Toolkit</div>
+        <p class="project-desc">Script Python modular para escaneo de redes locales: detección de hosts activos, identificación de puertos abiertos, banner grabbing y exportación de reportes en JSON/CSV.</p>
+        <a href="#" class="project-link">ver proyecto →</a>
+      </div>
+
+      <div class="project-card reveal" data-num="02">
+        <div class="project-type">Web Dev · CSS/JS</div>
+        <div class="project-title">Portfolio Cinematic</div>
+        <p class="project-desc">Página web interactiva de presentación personal con animaciones avanzadas, sección de galería parallax, música sincronizada y efectos de terminal en JavaScript puro.</p>
+        <a href="#" class="project-link">ver proyecto →</a>
+      </div>
+
+      <div class="project-card reveal" data-num="03">
+        <div class="project-type">Linux · Sysadmin</div>
+        <div class="project-title">Auto-Hardening Script</div>
+        <p class="project-desc">Script bash para hardening automatizado de servidores Ubuntu/Debian: configuración de UFW, Fail2ban, SSH seguro, cron de actualizaciones y notificaciones por email.</p>
+        <a href="#" class="project-link">ver proyecto →</a>
+      </div>
+
+      <div class="project-card reveal" data-num="04">
+        <div class="project-type">Hardware · Diagnostics</div>
+        <div class="project-title">HW Diagnostic Suite</div>
+        <p class="project-desc">Conjunto de herramientas y procedimientos documentados para diagnóstico sistemático de laptops y desktops: checklist POST, stress tests, análisis térmico y protocolos de reparación.</p>
+        <a href="#" class="project-link">ver proyecto →</a>
+      </div>
+
+      <div class="project-card reveal" data-num="05">
+        <div class="project-type">Ethical Hacking · CTF</div>
+        <div class="project-title">CTF WriteUps & Lab Notes</div>
+        <p class="project-desc">Documentación detallada de máquinas resueltas en plataformas como HackTheBox y TryHackMe. Metodología paso a paso, herramientas usadas y lecciones aprendidas.</p>
+        <a href="#" class="project-link">ver proyecto →</a>
+      </div>
+
+      <div class="project-card reveal" data-num="06">
+        <div class="project-type">Python · Web Scraping</div>
+        <div class="project-title">Price Tracker Bot</div>
+        <p class="project-desc">Bot Python con BeautifulSoup y Requests para monitoreo de precios en tiendas online. Envío de alertas por Telegram cuando el precio baja del umbral configurado.</p>
+        <a href="#" class="project-link">ver proyecto →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-inner">
+      <div class="contact-pre">$ ./contact --open</div>
+      <h2 class="contact-title">Let's build something <em>extraordinary.</em></h2>
+      <p class="contact-sub">
+        Disponible para proyectos de desarrollo web, consultoría en seguridad,
+        mantenimiento de sistemas o cualquier reto técnico que valga la pena resolver.
+      </p>
+
+      <div class="status-bar">
+        <div class="status-dot"></div>
+        <span class="status-text">Disponible</span>
+        <span class="status-sep">|</span>
+        <span class="status-loc">📍 Colombia</span>
+        <span class="status-sep">|</span>
+        <span class="status-loc">Resp. &lt; 24h</span>
+      </div>
+
+      <div class="contact-links">
+        <a href="mailto:tu@email.com" class="btn btn-primary">✉ Email</a>
+        <a href="https://github.com/" target="_blank" class="btn btn-secondary">⌥ GitHub</a>
+        <a href="https://linkedin.com/" target="_blank" class="btn btn-secondary">in LinkedIn</a>
+        <a href="#" class="btn btn-secondary">⎗ Descargar CV</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>© 2025 <span>Luis Barranco</span> · Engineered with obsession</div>
+  <div>
+    <span style="color:var(--green)">●</span> sys.online — uptime: <span id="uptime">0d 0h 0m</span>
+  </div>
+</footer>
+
+<script>
+/* ── TERMINAL ANIMATION ── */
+const lines = [
+  { type: 'cmd', prompt: '❯', text: 'whoami' },
+  { type: 'out', cls: 't-ok', text: 'Luis Barranco — systems engineer & web craftsman' },
+  { type: 'cmd', prompt: '❯', text: 'cat skills.txt' },
+  { type: 'out', cls: '', text: '├── hardware_maintenance: [████████░░] 88%' },
+  { type: 'out', cls: '', text: '├── linux_admin:         [█████████░] 90%' },
+  { type: 'out', cls: '', text: '├── ethical_hacking:     [███████░░░] 75%' },
+  { type: 'out', cls: '', text: '├── python:              [████████░░] 80%' },
+  { type: 'out', cls: 't-ok', text: '└── web_dev:            [████████░░] 85%' },
+  { type: 'cmd', prompt: '❯', text: 'sudo nmap -sV localhost' },
+  { type: 'out', cls: 't-warn', text: 'Starting Nmap 7.94 ( https://nmap.org )' },
+  { type: 'out', cls: 't-ok', text: '22/tcp  open  ssh     OpenSSH 9.3' },
+  { type: 'out', cls: 't-ok', text: '80/tcp  open  http    nginx 1.24.0' },
+  { type: 'cmd', prompt: '❯', text: 'python3 -c "import antigravity"' },
+  { type: 'out', cls: 't-ok', text: '// Launching in 3... 2... 1... 🚀' },
+  { type: 'cmd', prompt: '❯', text: 'git log --oneline -3' },
+  { type: 'out', cls: '', text: 'a3f91b2 feat: hardening script v2.1' },
+  { type: 'out', cls: '', text: 'c8d04e1 fix: CTF writeup — nmap bypass' },
+  { type: 'out', cls: 't-ok', text: '7e12a49 init: portfolio deployed ✔' },
+];
+
+const body = document.getElementById('terminal-body');
+let i = 0;
+
+function nextLine() {
+  if (i >= lines.length) {
+    const cur = document.createElement('div');
+    cur.className = 't-line';
+    cur.style.opacity = '1';
+    cur.innerHTML = `<span class="t-prompt" style="color:var(--green)">❯</span><span class="cursor"></span>`;
+    body.appendChild(cur);
+    return;
+  }
+  const l = lines[i++];
+  const div = document.createElement('div');
+  div.className = 't-line';
+  div.style.animationDelay = '0s';
+
+  if (l.type === 'cmd') {
+    div.innerHTML = `<span class="t-prompt">${l.prompt}</span><span class="t-cmd">${l.text}</span>`;
+  } else {
+    div.innerHTML = `<span class="t-out ${l.cls || ''}">${l.text}</span>`;
+  }
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+  setTimeout(nextLine, l.type === 'cmd' ? 600 : 200);
+}
+
+setTimeout(nextLine, 800);
+
+/* ── SCROLL REVEAL ── */
+const revealEls = document.querySelectorAll('.reveal, .timeline-item');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e, idx) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), idx * 80);
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+revealEls.forEach(el => obs.observe(el));
+
+/* ── PROGRESS BARS ── */
+const progObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.prog-fill').forEach(fill => {
+        fill.style.width = fill.dataset.width + '%';
+      });
+      progObs.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+const progSection = document.getElementById('progList');
+if (progSection) progObs.observe(progSection);
+
+/* ── COUNTER ANIMATION ── */
+function animateCount(el, target) {
+  let current = 0;
+  const step = target / 60;
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) { current = target; clearInterval(timer); }
+    el.textContent = Math.floor(current) + (target >= 30 ? '+' : '');
+  }, 25);
+}
+
+const counterObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('[data-count]').forEach(el => {
+        animateCount(el, +el.dataset.count);
+      });
+      counterObs.disconnect();
+    }
+  });
+}, { threshold: 0.5 });
+const heroSec = document.getElementById('hero');
+if (heroSec) counterObs.observe(heroSec);
+
+/* ── UPTIME ── */
+const start = Date.now();
+setInterval(() => {
+  const s = Math.floor((Date.now() - start) / 1000);
+  const d = Math.floor(s / 86400);
+  const h = Math.floor((s % 86400) / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  document.getElementById('uptime').textContent = `${d}d ${h}h ${m}m`;
+}, 60000);
+
+/* ── ACTIVE NAV ── */
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current
+      ? 'var(--green)'
+      : '';
+  });
+}, { passive: true });
+</script>
+</body>
+</html>
